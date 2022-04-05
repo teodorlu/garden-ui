@@ -1,0 +1,5 @@
+.clerk
+.cache
+.nrepl-port
+.cpcache/
+public/build
