@@ -1,5 +1,5 @@
 ;; # 👷🏼 Garden Builder
-(ns nextjournal.garden.ui.builder
+(ns ^:nextjournal.clerk/no-cache nextjournal.garden.ui.builder
   (:require [nextjournal.clerk :as clerk]
             [nextjournal.clerk.hashing :as h]
             [clojure.string :as str]))
@@ -14,7 +14,7 @@
   (mapv #(hash-map :file %) paths))
 
 ^{::clerk/visibility :fold}
-(defn badge [{:keys [block-counts file progress state]}]
+(defn badge [{:keys [block-counts file state]}]
   (let [done? (= state :done)]
     [:div.p-1
      [:div.rounded-md.border.border-slate-300.px-4.py-3.font-sans.shadow
@@ -30,26 +30,29 @@
                      :parsed "bg-orange-300"
                      :executing "bg-green-300"
                      "bg-slate-300")}])
-        [:div
-         [:div.text-sm.font-medium.leading-none
-          file
-          (when (seq block-counts)
-            [:span.text-slate-600.ml-2.font-normal
-             {:class "text-[11px]"}
-             (str "(" (str/join ", " (map (fn [[type count]] (str count " " (name type) " blocks")) block-counts)) ")")])]]]
-       (when progress
-         [:div.rounded-full.h-2.bg-white.border.border-slate-400.overflow-hidden.shadow-inner
-          {:class "w-[100px]"}
-          [:div.h-full.bg-green-300
-           {:style {:width (str (* 100 progress) "%")}}]])]]]))
+        [:span.text-sm.mr-1 (case state
+                              :parsed "Parsed"
+                              :executing "Building"
+                              :done "Built")]
+        [:div.text-sm.font-medium.leading-none
+         file]]
+       (when-let [{:keys [code markdown code-executing]} block-counts]
+         [:div.text-sm
+          (when code
+            [:<>
+             (when code-executing
+               [:<> [:span.font-bold code-executing] " of "])
+             (str code " code")])
+          (when markdown (str (when code " & ") markdown " markdown"))
+          " blocks"])]]]))
 
-^{::clerk/viewer {:transform-fn (comp clerk/html badge)}}
+{::clerk/viewer {:transform-fn (comp clerk/html badge)}}
 (first initial-state)
 
 ;; ## Parsing
 ;; We parse & hash all files at once to fail early.
 (def parsed
-  (mapv (comp (partial h/parse-file {:doc? true}) :file) initial-state))
+  (mapv (comp clerk/parse-file :file) initial-state))
 
 (def parsed-state
   (mapv (fn [{:as f :keys [blocks]}]
@@ -65,10 +68,14 @@
 ;; 🚧
 
 ^{::clerk/viewer {:transform-fn (comp clerk/html badge)}}
-(assoc (first parsed-state) :state :executing :progress 0.7)
+(-> (first parsed-state)
+    (assoc :state :executing)
+    (assoc-in [:block-counts :code-executing] 3))
 
 ;; ## Done
 ;; 🚧
 
 ^{::clerk/viewer {:transform-fn (comp clerk/html badge)}}
 (assoc (first parsed-state) :state :done)
+
+
