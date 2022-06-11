@@ -5,7 +5,7 @@
             [clojure.string :as str]))
 
 ;; ## Initial state
-;; We start with an initial fileset from `deps.edn`.
+;; We start with an initial fileset that’s defined in `deps.edn`.
 (def paths
   (-> "deps.edn" slurp h/read-string :aliases :nextjournal/clerk :exec-args :paths))
 
@@ -176,7 +176,6 @@
     process-exec-ratio)
 
 ;; ## Done
-;; 🚧
 
 ^{::clerk/viewer {:transform-fn (comp clerk/html badge)}}
 (-> (first analyzed-state)
