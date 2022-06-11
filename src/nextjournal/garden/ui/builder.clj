@@ -42,7 +42,7 @@
 (defn badge [{:keys [block-counts code-blocks file state]}]
   [:div.p-1
    [:div.rounded-md.border.border-slate-300.px-4.py-3.font-sans.shadow
-    {:class (if (= state :done) "bg-green-100" "bg-slate-100")}
+    {:class (if (= state :done) "bg-green-50" "bg-slate-100")}
     [:div.flex.justify-between.items-center
      [:div.flex.items-center
       [:div.mr-2
@@ -72,7 +72,8 @@
           (map (fn [{:keys [exec-duration exec-state exec-ratio text var]}]
                  [:div.font-mono.px-3.py-1.border-b.border-slate-200.last:border-0.flex.items-center.justify-between
                   {:class (str "text-[10px] "
-                               (when (= :done exec-state) "bg-green-50"))}
+                               (when (and (= :done exec-state)
+                                          (not= :done state)) "bg-green-50"))}
                   [:div.flex.items-center
                    (case exec-state
                      :done (checkmark {:size 14})
@@ -178,5 +179,14 @@
 ;; 🚧
 
 ^{::clerk/viewer {:transform-fn (comp clerk/html badge)}}
-(assoc (first parsed-state) :state :done)
+(-> (first analyzed-state)
+    (assoc :state :done)
+    (update :code-blocks
+            (fn [code-blocks]
+              (map-indexed
+                (fn [i b]
+                  (assoc b :exec-state :done
+                           :exec-duration (rand-int 40000))) code-blocks)))
+    process-exec-ratio)
+(assoc (first analyzed-state) :state :done)
 
