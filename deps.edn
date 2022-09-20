@@ -1,5 +1,5 @@
 {:paths ["src"]
- :deps {io.github.nextjournal/clerk {:mvn/version "0.10.562"}}
+ :deps {io.github.nextjournal/clerk {:git/sha "add0fced21c6b0d5a8822bafbdbd6e7f02b4f3c8"}}
  :aliases {:nextjournal/clerk {:exec-fn nextjournal.clerk/build-static-app!
                                :exec-args {:bundle? false
                                            :paths ["src/nextjournal/garden/ui/builder.clj"]}}}}

@@ -1,13 +1,17 @@
-;; # 👷🏼 Garden Builder
-(ns ^:nextjournal.clerk/no-cache nextjournal.garden.ui.builder
+;; # 🌳 Clerk Garden Builder
+(ns nextjournal.clerk.garden-builder
+  {:nextjournal.clerk/visibility {:code :hide}}
   (:require [nextjournal.clerk :as clerk]
-            [nextjournal.clerk.hashing :as h]
+            [nextjournal.clerk.analyzer :as analyzer]
+            [nextjournal.clerk.builder :as builder]
+            [nextjournal.clerk.parser :as parser]
             [clojure.string :as str]))
 
 ;; ## Initial state
 ;; We start with an initial fileset from `deps.edn`.
 (def paths
-  (-> "deps.edn" slurp h/read-string :aliases :nextjournal/clerk :exec-args :paths))
+  (-> "deps.edn" slurp parser/read-string :aliases :nextjournal/clerk :exec-args :paths builder/expand-paths)
+  #_["index.clj" "notebooks/rule_30.clj" "notebooks/viewer_api.clj"])
 
 ^{::clerk/visibility :hide ::clerk/viewer clerk/hide-result}
 (defn status-light [state & [{:keys [size] :or {size 14}}]]
@@ -42,7 +46,7 @@
 (defn badge [{:keys [block-counts code-blocks file state]}]
   [:div.p-1
    [:div.rounded-md.border.border-slate-300.px-4.py-3.font-sans.shadow
-    {:class (if (= state :done) "bg-green-50" "bg-slate-100")}
+    {:class (if (= state :done) "bg-green-100" "bg-slate-100")}
     [:div.flex.justify-between.items-center
      [:div.flex.items-center
       [:div.mr-2
@@ -69,124 +73,114 @@
         " blocks"])]]
    [:div.rounded-b.mx-2.border.border-slate-300.bg-slate-50.shadow
     (into [:div]
-          (map (fn [{:keys [exec-duration exec-state exec-ratio text var]}]
-                 [:div.font-mono.px-3.py-1.border-b.border-slate-200.last:border-0.flex.items-center.justify-between
-                  {:class (str "text-[10px] "
-                               (when (and (= :done exec-state)
-                                          (not= :done state)) "bg-green-50"))}
-                  [:div.flex.items-center
-                   (case exec-state
-                     :done (checkmark {:size 14})
-                     :executing (spinner {:size 11})
-                     (status-light exec-state {:size 11}))
-                   [:div.ml-2
-                    (if var
-                      (name var)
-                      [:span.text-slate-400
-                       (let [max-len 40
-                             count (count text)]
-                         (if (<= count max-len)
-                           text
-                           (str (subs text 0 max-len) "…")))])]]
-                  [:div.flex.items-center
-                   (let [max-width 150]
-                     [:div.rounded-full.mr-3
-                      {:class (str "h-[4px] "
-                                   (if (contains? #{:done :executing} exec-state)
-                                     "bg-green-600 "
-                                     "bg-slate-200 "))
-                       :style {:min-width 1
-                               :width (* max-width (or exec-ratio (/ 1 (:code block-counts))))}}])
-                   [:div.text-left
-                    {:class "w-[50px]"}
-                    (if exec-duration
-                      [:span
-                       (format "%.3f" (/ exec-duration 1000.0))
-                       [:span.text-slate-500 {:class "ml-[1px]"} "s"]]
-                      [:span.text-slate-500 "Waiting"])]]])
-               code-blocks))]
+      (map (fn [{:keys [exec-duration exec-state exec-ratio text var]}]
+             [:div.font-mono.px-3.py-1.border-b.border-slate-200.last:border-0.flex.items-center.justify-between
+              {:class (str "text-[10px] "
+                        (when (= :done exec-state) "bg-green-50"))}
+              [:div.flex.items-center
+               (case exec-state
+                 :done (checkmark {:size 14})
+                 :executing (spinner {:size 11})
+                 (status-light exec-state {:size 11}))
+               [:div.ml-2
+                (if var
+                  (name var)
+                  [:span.text-slate-400
+                   (let [max-len 40
+                         count (count text)]
+                     (if (<= count max-len)
+                       text
+                       (str (subs text 0 max-len) "…")))])]]
+              [:div.flex.items-center
+               (let [max-width 150]
+                 [:div.rounded-full.mr-3
+                  {:class (str "h-[4px] "
+                            (if (contains? #{:done :executing} exec-state)
+                              "bg-green-600 "
+                              "bg-slate-200 "))
+                   :style {:min-width 1
+                           :width (* max-width (or exec-ratio (/ 1 (:code block-counts))))}}])
+               [:div.text-left
+                {:class "w-[50px]"}
+                (if exec-duration
+                  [:span
+                   (format "%.3f" (/ exec-duration 1000.0))
+                   [:span.text-slate-500 {:class "ml-[1px]"} "s"]]
+                  [:span.text-slate-500 "Queued"])]]])
+        code-blocks))]
    #_[:div.mx-auto.w-8.border.border-t-0.border-slate-300.bg-slate-50.rounded-b.text-slate-500.flex.justify-center.shadow.hover:bg-slate-100.cursor-pointer
-    [:svg.h-3.w-3
-     {:xmlns "http://www.w3.org/2000/svg" :fill "none" :viewBox "0 0 24 24" :stroke "currentColor" :stroke-width "2"}
-     [:path {:stroke-linecap "round" :stroke-linejoin "round" :d "M19 9l-7 7-7-7"}]]]])
+      [:svg.h-3.w-3
+       {:xmlns "http://www.w3.org/2000/svg" :fill "none" :viewBox "0 0 24 24" :stroke "currentColor" :stroke-width "2"}
+       [:path {:stroke-linecap "round" :stroke-linejoin "round" :d "M19 9l-7 7-7-7"}]]]])
 
-^{::clerk/viewer {:transform-fn (comp clerk/html badge)}}
+(def badge-viewer
+  {:transform-fn (clerk/update-val (comp clerk/html badge))})
+
+^{::clerk/viewer badge-viewer}
 (first initial-state)
 
 ;; ## Parsing
 ;; We parse & hash all files at once to fail early.
 (def parsed
-  (mapv (comp clerk/parse-file :file) initial-state))
+  (mapv (comp parser/parse-file :file) initial-state))
 
 (defn process-doc [{:as doc :keys [blocks graph]}]
   (cond-> (-> doc
-              (select-keys [:file :title])
-              (assoc :block-counts (frequencies (map :type blocks))))
-          graph (assoc :code-blocks (mapv (fn [{:as block :keys [form]}]
-                                            (cond-> (select-keys block [:var])
-                                              form (assoc :text (pr-str form))))
-                                          (filter (comp #{:code} :type) blocks)))))
+            (select-keys [:file :title])
+            (assoc :block-counts (frequencies (map :type blocks))))
+    graph (assoc :code-blocks (mapv (fn [{:as block :keys [form]}]
+                                      (cond-> (select-keys block [:var])
+                                        form (assoc :text (pr-str form))))
+                                (filter (comp #{:code} :type) blocks)))))
 
 (def parsed-state
   (mapv process-doc parsed))
 
-^{::clerk/viewer {:transform-fn (comp clerk/html badge)}}
+^{::clerk/viewer badge-viewer}
 (assoc (first parsed-state) :state :parsed)
 
 ;; ## Analyzing
 ;; When then analyze the build graph and enrich the state with additional
 ;; information.
-
 (def analyzed
-  (mapv h/build-graph parsed))
+  (mapv analyzer/build-graph parsed))
 
 (def analyzed-state
   (mapv process-doc analyzed))
 
-^{::clerk/viewer {:transform-fn (comp clerk/html badge)}}
+^{::clerk/viewer badge-viewer}
 (assoc (first analyzed-state) :state :analyzed)
 
 ;; ## Execution Progress
-;; 🚧
-
+;; As all the cells inside an analyzed notebooks are executed, durations are collected
+;; and a total is calculated. Execution count is updated as the cells complete.
 ^{::clerk/visibility :hide ::clerk/viewer clerk/hide-result}
 (defn process-exec-ratio [doc]
   (update doc :code-blocks
-          (fn [code-blocks]
-            (let [durations (->> code-blocks (map :exec-duration) (remove nil?))
-                  total (reduce + durations)]
-              (map (fn [{:as b :keys [exec-duration]}]
-                     (if exec-duration
-                       (assoc b :exec-ratio (/ exec-duration total))
-                       b))
-                   code-blocks)))))
+    (fn [code-blocks]
+      (let [durations (->> code-blocks (map :exec-duration) (remove nil?))
+            total (reduce + durations)]
+        (map (fn [{:as b :keys [exec-duration]}]
+               (if exec-duration
+                 (assoc b :exec-ratio (/ exec-duration total))
+                 b))
+          code-blocks)))))
 
-^{::clerk/viewer {:transform-fn (comp clerk/html badge)}}
+^{::clerk/viewer badge-viewer}
 (-> (first analyzed-state)
-    (assoc :state :executing)
-    (assoc-in [:block-counts :code-executing] 3)
-    (update :code-blocks
-            (fn [code-blocks]
-              (map-indexed
-                (fn [i b]
-                  (if (< i 7)
-                    (assoc b :exec-state (if (< i 6) :done :executing)
-                             :exec-duration (nth [251 788 2340 14251 303 40122 3129] i))
-                    b)) code-blocks)))
-    process-exec-ratio)
+  (assoc :state :executing)
+  (assoc-in [:block-counts :code-executing] 3)
+  (update :code-blocks
+    (fn [code-blocks]
+      (map-indexed
+        (fn [i b]
+          (if (< i 7)
+            (assoc b :exec-state (if (< i 6) :done :executing)
+                     :exec-duration (nth [251 788 2340 14251 303 40122 3129] i))
+            b)) code-blocks)))
+  process-exec-ratio)
 
 ;; ## Done
-;; 🚧
-
-^{::clerk/viewer {:transform-fn (comp clerk/html badge)}}
-(-> (first analyzed-state)
-    (assoc :state :done)
-    (update :code-blocks
-            (fn [code-blocks]
-              (map-indexed
-                (fn [i b]
-                  (assoc b :exec-state :done
-                           :exec-duration (rand-int 40000))) code-blocks)))
-    process-exec-ratio)
-(assoc (first analyzed-state) :state :done)
-
+;; Once all cells are done, the notebook is deemed :done as well.
+^{::clerk/viewer badge-viewer}
+(assoc (first parsed-state) :state :done)
