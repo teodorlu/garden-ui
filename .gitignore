@@ -1,5 +1,6 @@
 .clerk
 .cache
+.DS_Store
 .nrepl-port
 .cpcache/
 .idea/
