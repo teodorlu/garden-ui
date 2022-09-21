@@ -3,7 +3,21 @@
   (:require [nextjournal.clerk :as clerk]
             [nextjournal.clerk.viewer :as v]))
 
+(defn code-listing [code]
+  (clerk/html {::clerk/width :wide} [:div.viewer.viewer-code.not-prose (clerk/code code)]))
+
+(defn step [indicator md]
+  (clerk/html
+   [:div.flex.items-center.font-sans.font-bold.step
+    [:div.mr-2.rounded-full.border-2.border-green-800.bg-green-100.flex.items-center.justify-center.text-lg.leading-none
+     {:class "w-[34px] h-[34px]"}
+     indicator]
+    (clerk/md md)]))
+
 {:nextjournal.clerk/visibility {:code :hide :result :show}}
+
+(clerk/html
+ [:style ".step .viewer-markdown p { margin-bottom: 0; font-size: 1.3rem; }"])
 
 (v/html
  [:div.pointer-events-none.fixed.bottom-0.left-0.right-0.opacity-20
@@ -48,20 +62,8 @@
  [:div.text-center.not-prose.font-sans
   [:h2 "How does it work?"]])
 
-^{:nextjournal.clerk/visibility {:result :hide}}
-(defn code-listing [code]
-  (clerk/html {::clerk/width :wide} [:div.viewer.viewer-code.not-prose (clerk/code code)]))
+(step 1 "Add a `:nextjournal/clerk` alias to your `deps.edn` file.")
 
-^{:nextjournal.clerk/visibility {:result :hide}}
-(defn step [number md]
-  (clerk/html
-   [:div.flex.items-center.font-sans.text-2xl.font-bold
-    [:div.mr-2.rounded-full.border-2.border-green-800.bg-green-100.flex.items-center.justify-center
-     {:class "w-[34px] h-[34px]"}
-     number]
-    (clerk/md md)]))
-
-;; ## 1️⃣ Add a `:nextjournal/clerk` alias to your `deps.edn` file.
 ;; It must contain, at least, the following values:
 
 (code-listing
@@ -70,13 +72,17 @@
                                :exec-args {:paths [\"src/nextjournal/garden/ui/builder.clj\" ]}}}}
                                ;; TODO: add all notebooks you want to have built ☝️")
 
-;; ## 2️⃣  Try it out locally to make sure it works
+(step 2 "Try it out locally to make sure it works")
+
 ;; Entering the following command into your Terminal should build your notebooks and open an
 ;; index page in your browser.
 
 (code-listing "clj -X:nextjournal/clerk")
 
-;; ## ✅  Push it to GitHub and done!
+(step
+ "✓"
+ "Push it to GitHub and done!")
+
 ;; **clerk.garden** mirrors your GitHub URLs, so:
 ;; * after pushing your project to https://github.com/your-handle/your-project,
 ;; * you can simply visit https://github.clerk.garden/your-handle/your-project and we’ll build it for you! ✨
