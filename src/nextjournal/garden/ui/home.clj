@@ -1,20 +1,68 @@
-;; # 🌳 Clerk Garden
 (ns nextjournal.garden.ui.home
   {:nextjournal.clerk/visibility {:code :hide :result :hide}}
-  (:require [nextjournal.clerk :as clerk]))
-
-;; Welcome, friend. **clerk.garden** is a simple publishing space for Clerk notebooks.
-;; Here is how it works:
-
-;; ## 1️⃣ Add a `:nextjournal/clerk` alias to your `deps.edn` file.
-;; It must contain, at least, the following values:
-
-(defn code-listing [code]
-  (clerk/html {::clerk/width :wide} [:div.viewer.viewer-code.not-prose (clerk/code code)]))
+  (:require [nextjournal.clerk :as clerk]
+            [nextjournal.clerk.viewer :as v]))
 
 {:nextjournal.clerk/visibility {:code :hide :result :show}}
 
+(v/html
+ [:div.pointer-events-none.fixed.bottom-0.left-0.right-0.opacity-20
+  {:class "h-[250px]"
+   :style {:background "linear-gradient(transparent, rgba(88, 199, 0, 1.000) 95%)"}}])
 
+(v/html
+ [:div.text-center.pt-24.not-prose
+  [:div.absolute.opacity-100
+   {:class "text-[200px] left-1/2 top-0 -translate-x-1/2"
+    :style {:z-index -1}}
+   "🌱"]
+  [:div.absolute.bottom-0.left-0.w-full
+   {:class "h-[100px]"
+    :style {:background "linear-gradient(transparent, white 70%)"
+            :z-index -1}}]
+  [:h1.text-4xl "Clerk Garden"]
+  [:p.text-xl.font-sans.font-bold.mt-2.text-green-800
+   "A simple publishing space for Clerk notebooks"]])
+
+(v/html
+ [:div.text-center.not-prose.font-sans
+  [:div
+   [:label.text-sm.font-bold {:for "build-input"} "Enter a GitHub repo to build and publish"]
+   [:div.relative.max-w-lg.mx-auto
+    [:input.rounded-full.text-center.border.shadow.block.flex-auto.px-4.py-2.text-lg.w-full.my-2
+     {:id "build-input" :placeholder "e.g. nextjournal/clerk-demo"}]
+    [:button.ml-2.rounded-full.absolute.bg-green-700.text-white.top-0.right-0.flex.items-center.justify-center.hover:bg-green-600.transition-all
+     {:class "w-[34px] h-[34px] mr-[8px] mt-[8px]"}
+     "→"]]
+   [:p.text-sm
+    "or click here to try an example: "
+    [:a.text-green-800.hover:underline.font-bold {:href "#"} "nextjournal/clerk-demo"]]]])
+
+(v/html
+ [:div.flex.items-end.justify-center
+  [:div.text-xl.mr-1 "🍁"]
+  [:div.text-3xl "🍁"]
+  [:div.text-xl.ml-1 "🍁"]])
+
+(v/html
+ [:div.text-center.not-prose.font-sans
+  [:h2 "How does it work?"]])
+
+^{:nextjournal.clerk/visibility {:result :hide}}
+(defn code-listing [code]
+  (clerk/html {::clerk/width :wide} [:div.viewer.viewer-code.not-prose (clerk/code code)]))
+
+^{:nextjournal.clerk/visibility {:result :hide}}
+(defn step [number md]
+  (clerk/html
+   [:div.flex.items-center.font-sans.text-2xl.font-bold
+    [:div.mr-2.rounded-full.border-2.border-green-800.bg-green-100.flex.items-center.justify-center
+     {:class "w-[34px] h-[34px]"}
+     number]
+    (clerk/md md)]))
+
+;; ## 1️⃣ Add a `:nextjournal/clerk` alias to your `deps.edn` file.
+;; It must contain, at least, the following values:
 
 (code-listing
  "{:deps ,,,
