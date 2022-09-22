@@ -26,17 +26,20 @@
 
 (v/html
  [:div.text-center.pt-24.not-prose
+  {:class "h-[230px]"}
   [:div.absolute.opacity-100
    {:class "text-[200px] left-1/2 top-0 -translate-x-1/2"
-    :style {:z-index -1}}
+    :style {:z-index 0}}
    "🌱"]
   [:div.absolute.bottom-0.left-0.w-full
    {:class "h-[100px]"
     :style {:background "linear-gradient(transparent, white 70%)"
-            :z-index -1}}]
-  [:h1.text-4xl "Clerk Garden"]
-  [:p.text-xl.font-sans.font-bold.mt-2.text-green-800
-   "A simple publishing space for Clerk notebooks"]])
+            :z-index 1}}]
+  [:div.absolute.left-0.right-0.bottom-0
+   {:style {:z-index 2}}
+   [:h1.text-4xl "Clerk Garden"]
+   [:p.text-xl.font-sans.font-bold.mt-2.text-green-800
+    "A simple publishing space for Clerk notebooks"]]])
 
 (v/with-viewer
   {:render-fn
