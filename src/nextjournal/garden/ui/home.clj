@@ -38,19 +38,28 @@
   [:p.text-xl.font-sans.font-bold.mt-2.text-green-800
    "A simple publishing space for Clerk notebooks"]])
 
-(v/html
- [:div.text-center.not-prose.font-sans
-  [:div
-   [:label.text-sm.font-bold {:for "build-input"} "Enter a GitHub repo to build and publish"]
-   [:div.relative.max-w-lg.mx-auto
-    [:input.rounded-full.text-center.border.shadow.block.flex-auto.px-4.py-2.text-lg.w-full.my-2
-     {:id "build-input" :placeholder "e.g. nextjournal/clerk-demo"}]
-    [:button.ml-2.rounded-full.absolute.bg-green-700.text-white.top-0.right-0.flex.items-center.justify-center.hover:bg-green-600.transition-all
-     {:class "w-[34px] h-[34px] mr-[8px] mt-[8px]"}
-     "→"]]
-   [:p.text-sm
-    "or click here to try an example: "
-    [:a.text-green-800.hover:underline.font-bold {:href "#"} "nextjournal/clerk-demo"]]]])
+(v/with-viewer
+  {:render-fn
+   '(fn []
+      (v/html [:div.text-center.not-prose.font-sans
+               (let [navigate-to-repo! (fn [] (let [input (.getElementById js/document "build-input")
+                                                    repo (.-value input)
+                                                    path (str "/" repo)]
+                                                (set! (.-location js/window) path)))]
+                 [:div
+                  [:label.text-sm.font-bold {:for "build-input"} "Enter a GitHub repo to build and publish"]
+                  [:div.relative.max-w-lg.mx-auto
+                   [:input.rounded-full.text-center.border.shadow.block.flex-auto.px-4.py-2.text-lg.w-full.my-2
+                    {:id "build-input" :placeholder "e.g. nextjournal/clerk-demo"
+                     :on-key-down (fn [e] (when (= "Enter" (.-key e))
+                                            (navigate-to-repo!)))}]
+                   [:button.ml-2.rounded-full.absolute.bg-green-700.text-white.top-0.right-0.flex.items-center.justify-center.hover:bg-green-600.transition-all
+                    {:class "w-[34px] h-[34px] mr-[8px] mt-[8px]"
+                     :on-click navigate-to-repo!}
+                    "→"]]
+                  [:p.text-sm
+                   "or click here to try an example: "
+                   [:a.text-green-800.hover:underline.font-bold {:href "/nextjournal/clerk-demo"} "nextjournal/clerk-demo"]]])]))} nil)
 
 (v/html
  [:div.flex.items-end.justify-center
