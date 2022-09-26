@@ -28,9 +28,9 @@
  [:div.text-center.pt-24.not-prose
   {:class "h-[230px]"}
   [:div.absolute.opacity-100
-   {:class "text-[200px] left-1/2 top-0 -translate-x-1/2"
+   {:class "text-[200px] left-1/2 top-[14px] -translate-x-1/2"
     :style {:z-index 0}}
-   "🌱"]
+   [:img {:src "https://cdn.nextjournal.com/data/QmQ9GN8PnYjxcZSxGMdipWm6KXZCXcnPsVHRC56R99rnFT?filename=seedling.png&content-type=image/png" :width 200 :height 200}]]
   [:div.absolute.bottom-0.left-0.w-full
    {:class "h-[100px]"
     :style {:background "linear-gradient(transparent, white 70%)"
@@ -65,10 +65,11 @@
                    [:a.text-green-800.hover:underline.font-bold {:href "/nextjournal/clerk-demo"} "nextjournal/clerk-demo"]]])]))} nil)
 
 (v/html
- [:div.flex.items-end.justify-center
-  [:div.text-xl.mr-1 "🍁"]
-  [:div.text-3xl "🍁"]
-  [:div.text-xl.ml-1 "🍁"]])
+ (let [maple-leaf "https://cdn.nextjournal.com/data/QmNZr456vkY6NccAHynXQngq7Mtpit49rCYx7FovE8q7ou?filename=maple-leaf.png&content-type=image/png"]
+   [:div.flex.items-end.justify-center
+    [:img {:src maple-leaf :width 22 :height 22}]
+    [:img {:src maple-leaf :width 34 :height 34}]
+    [:img {:src maple-leaf :width 22 :height 22}]]))
 
 (v/html
  [:div.text-center.not-prose.font-sans
