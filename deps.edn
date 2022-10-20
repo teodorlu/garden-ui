@@ -2,4 +2,6 @@
  :deps {io.github.nextjournal/clerk {:git/sha "1b710df801b9e829f1037b89b345207505ad99df"}}
  :aliases {:nextjournal/clerk {:exec-fn nextjournal.clerk/build-static-app!
                                :exec-args {:bundle? false
-                                           :paths ["src/nextjournal/garden/ui/builder.clj"]}}}}
+                                           :index "src/nextjournal/garden/ui/home.clj"
+                                           :paths ["src/nextjournal/garden/ui/home.clj"
+                                                   "src/nextjournal/garden/ui/builder.clj"]}}}}
