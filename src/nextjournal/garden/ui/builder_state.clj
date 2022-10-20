@@ -9,7 +9,7 @@
 ;; ## Initial state
 ;; We start with an initial fileset from `deps.edn`.
 (def paths
-  (-> "deps.edn" slurp parser/read-string :aliases :nextjournal/clerk :exec-args :paths builder/expand-paths))
+  (-> "deps.edn" slurp analyzer/read-string :aliases :nextjournal/clerk :exec-args :paths builder/expand-paths))
 
 ;; Our initial state is a seq of maps with only a `:file` key. This is the first state we want to visualize. Successive states should add to this map.
 (def initial-state

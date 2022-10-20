@@ -10,7 +10,7 @@
 ;; ## Initial state
 ;; We start with an initial fileset from `deps.edn`.
 (def paths
-  (-> "deps.edn" slurp parser/read-string :aliases :nextjournal/clerk :exec-args :paths builder/expand-paths)
+  (-> "deps.edn" slurp analyzer/read-string :aliases :nextjournal/clerk :exec-args builder/expand-paths)
   #_["index.clj" "notebooks/rule_30.clj" "notebooks/viewer_api.clj"])
 
 ^{::clerk/visibility :hide ::clerk/viewer clerk/hide-result}
