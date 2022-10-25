@@ -118,8 +118,8 @@
                                        (set! (.-location js/window) path)))]
          [:div.px-8.lg:px-0.md:mx-auto.not-prose
           {:class "lg:max-w-[1024px]"}
-          [:div.mt-20.text-greenish.font-iosevka.flex.items-end
-           [:div.lg:max-w-xl.xl:max-w-3xl
+          [:div.mt-20.text-greenish.font-iosevka.flex.items-end.justify-between
+           [:div.w-full.flex-auto
             [:h1.flex [:img {:src "https://cdn.nextjournal.com/data/QmTmkRBotM198V8Uvrvp2F1rMLAcHLmbfH1tTcg64J749G?filename=garden-logo.svg&content-type=image/svg%2Bxml" :alt "Clerk Garden"}]]
             [:h2.text-xl.md:text-2xl.font-medium.mt-6.font-iosevka
              "A simple publishing space for Clerk notebooks."]
@@ -135,7 +135,7 @@
                :class "h-[52px] w-[60px] bg-[#93BD9A]/30 text-[#9BBC9D] hover:bg-[#93BD9A]/60 hover:text-white transition-all duration-350"
                :on-click navigate-to-repo!}
               "⮐"]]]
-           [:figure.flex-auto.ml-10.text-center.hidden.lg:flex.flex-col.justify-center
+           [:figure.flex-auto.ml-10.text-center.hidden.lg:flex.flex-col.items-end.flex-shrink-0
             [:img {:src "https://cdn.nextjournal.com/data/QmRnuZkxmyuUeZ8ZxCd7y74Ux6caDmLBqBK3rMWwvUc6kB?filename=tree.svg&content-type=image/svg%2Bxml" :width 248}]]]
           [:p.pt-3.text-sm.font-inter.text-greenish-60 "or click here to try an example: " [:a {:href "https://github.clerk.garden/nextjournal/clerk-demo/"} "nextjournal/clerk-demo"]]])
        [:div.text-center.not-prose.font-sans]))} nil)
