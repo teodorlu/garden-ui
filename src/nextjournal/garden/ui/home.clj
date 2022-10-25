@@ -137,7 +137,7 @@
               "⮐"]]]
            [:figure.flex-auto.ml-10.text-center.hidden.lg:flex.flex-col.justify-center
             [:img {:src "https://cdn.nextjournal.com/data/QmRnuZkxmyuUeZ8ZxCd7y74Ux6caDmLBqBK3rMWwvUc6kB?filename=tree.svg&content-type=image/svg%2Bxml" :width 248}]]]
-          [:p.pt-3.text-sm.font-inter.text-greenish-60 "or click here to try an example: " [:a {:href ""} "nextjournal/clerk-demo"]]])
+          [:p.pt-3.text-sm.font-inter.text-greenish-60 "or click here to try an example: " [:a {:href "https://github.clerk.garden/nextjournal/clerk-demo/"} "nextjournal/clerk-demo"]]])
        [:div.text-center.not-prose.font-sans]))} nil)
 
 ^{::clerk/width :full}
@@ -171,4 +171,4 @@
      [:li "you can simply visit " [:a {:href "https://github.clerk.garden/your-handle/your-project"} "https://github.clerk.garden/your-handle/your-project"] " and we'll build it for you! ✨"]]]]
   [:footer.text-sm.my-20.text-greenish-60.separator-top.pt-4
    [:ul.flex
-    [:li.mr-4 "This website is built with Clerk. " [:a.link-hairline {:href "#"} "See notebook."]]]]])
+    [:li.mr-4 "This website is built with Clerk."]]]])
