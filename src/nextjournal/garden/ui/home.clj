@@ -113,9 +113,9 @@
    '(fn []
       (v/html
        (let [navigate-to-repo! (fn [] (let [input (.getElementById js/document "build-input")
-                                           repo (.-value input)
-                                           path (str "/" repo)]
-                                       (set! (.-location js/window) path)))]
+                                            repo (.-value input)
+                                            path (str "/" repo "?update=1")]
+                                        (set! (.-location js/window) path)))]
          [:div.px-8.lg:px-0.md:mx-auto.not-prose
           {:class "lg:max-w-[1024px]"}
           [:div.mt-20.text-greenish.font-iosevka.flex.items-end.justify-between
