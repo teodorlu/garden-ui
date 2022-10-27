@@ -1,6 +1,11 @@
 ^{:nextjournal.clerk/visibility {:code :hide}}
 (ns nextjournal.garden.ui.home
-  {:nextjournal.clerk/visibility {:code :hide :result :hide}}
+  {:nextjournal.clerk/visibility {:code :hide :result :hide}
+   :nextjournal.clerk/open-graph
+   {:url "https://github.clerk.garden"
+    :title "Clerk Garden"
+    :description "A simple publishing space for Clerk notebooks."
+    :image "https://cdn.nextjournal.com/data/QmVFYe7EG8M8ZimiHjp19UUd13SuhCKQoCwxnThnNZ8e6y?filename=clerk-garden-og-image.png&content-type=image/png"}}
   (:require [clojure.string :as str]
             [nextjournal.clerk :as clerk]
             [nextjournal.clerk.viewer :as v]))
