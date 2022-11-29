@@ -167,7 +167,7 @@
     [:h3.text-lg.md:text-2xl.font-medium.mt-6.font-iosevka.mb-0.mt-10
      "2. Try it out locally to make sure it works"]
     [:p.font-inter.mt-4.mb-6.max-w-xl.leading-normal.text-greenish-60
-     "Entering the following command into your Terminal should build your notebooks and open an index page in your browser."]
+     "Entering the following command into your terminal should build your notebooks and open an index page in your browser."]
     (code-listing "clj -X:nextjournal/clerk :browse true")
     [:p.font-inter.mt-4.mb-6.max-w-xl.leading-normal.text-greenish-60
      "Prepend any extra aliases: " (code "clj -X:dev:nextjournal/clerk")]
