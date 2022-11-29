@@ -154,16 +154,18 @@
     [:span.font-iosevka.font-medium.uppercase.text-greenish "How does it work?"]]
    [:div.mt-10.text-greenish
     [:h3.text-lg.md:text-2xl.font-medium.mt-6.font-iosevka.mb-0
-     "1. Add a " (code ":nextjournal.clerk") " to " (code ":deps :aliases") " in your " (code "deps.edn") " file:"]
+     "1. Add a " (code ":nextjournal.clerk") " to " (code ":aliases") " in your " (code "deps.edn") " file:"]
     (code-listing
-     "{:nextjournal/clerk
- {:exec-fn nextjournal.clerk/build!
-  :exec-args {:paths [\"notebooks/hello_garden.clj\"]}
-  ;; TODO: add all notebooks you want to have built ☝️
-  ;; if you just want to build one notebook, set `:index`
+     "{:deps ...
+ :aliases
+ {:nextjournal/clerk
+  {:exec-fn nextjournal.clerk/build!
+   :exec-args {:paths [\"notebooks/hello_garden.clj\"]}
+   ;; TODO: add all notebooks you want to have built ☝️
+   ;; if you just want to build one notebook, set `:index`
 
-  ;; optional list of aliases to include in the build
-  :nextjournal.clerk/aliases [:dev]}}")
+   ;; optional list of aliases to include in the build
+   :nextjournal.clerk/aliases [:dev]}}}")
     [:h3.text-lg.md:text-2xl.font-medium.mt-6.font-iosevka.mb-0.mt-10
      "2. Try it out locally to make sure it works"]
     [:p.font-inter.mt-4.mb-6.max-w-xl.leading-normal.text-greenish-60
